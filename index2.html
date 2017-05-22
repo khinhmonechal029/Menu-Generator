@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Menu Generator</title>
+	<style>
+	#left-side{
+		margin-left: 20px;
+	}
+
+	span{
+    width: 3px;
+    padding: 3px;
+    height: 1px;
+    margin-top: 3px;
+	}
+
+	li{
+		list-style: none;
+	}
+
+	#menu-content li span{
+		background-color: teal;
+	}
+
+	</style>
+</head>
+<body>
+<link rel="stylesheet" type="text/css" href="css/bulma-docs.css">
+<br>
+<div id="left-side">
+	<div class="field is-grouped">
+		<p class="control">
+			<input class="input" type="text" id="new-menu" placeholder="Menu">
+		</p>
+
+	    <p class="control">
+	    	<a class="button is-primary" id="add-menu">Add Menu</a>
+	  	</p>	  	
+	</div>
+
+	<br><br>
+		<div id="demo"></div>
+	<br><br>
+
+	<div class="content">
+	<p>Menu Items</p>
+		<ol class="sortable">		
+			<ul id="tasks">
+				<li>
+					<span></span>
+				</li>
+			</ul>
+		</ol>
+	</div>
+
+	<div class="field is-grouped">
+		<p class="control">
+	    	<a class="button is-primary" id="save">Save</a>
+	  	</p>
+	  	<p class="control">
+	    	<a class="button is-primary" id="preview">Preview</a>
+	  	</p>
+	</div>
+</div>
+	<br><br>
+		<div id="menu-content"></div>
+
+<script src="js/jquery-1.11.0.min.js"></script>
+<script src="js/jquery-ui.min.js"></script>
+<script src="js/jquery.mjs.nestedSortable.js"></script>
+<script>
+	if(localStorage){
+		$(document).ready(function(){
+			$("#tasks").html(localStorage.getItem("task"));
+			$("#add-menu").click(function() {
+				var menu = $("#new-menu").val();
+
+				if(!menu) return false;	
+
+				AppendData(menu).appendTo("#tasks");
+				
+				$("#new-menu").val("").focus();
+			});
+
+			$("#new-menu").keydown(function(e) {
+				if(e.which == 13)
+				$("#add-menu").click();
+			  });
+
+		    function AppendData(msg) {
+
+				var task = $("<span>").text(msg);
+				
+				var del = $("<a>", {href: "#"})
+					.html("&times;").click(function() {
+					$(this).parent().fadeOut(function () {
+						$(this).remove();
+					});
+				});
+				return $("<li>").append(task).append(del);
+		    }
+
+			$("#save").click(function(){		
+				var task = $("#tasks").html();
+				localStorage.setItem("task",task);
+				alert('Saved!');
+			});
+
+			$("#preview").click(function(){
+				$("#menu-content").html(localStorage.getItem("task"));
+				var output = $("#menu-content").html();
+
+				var arr = [];
+				$("#menu-content>li").each(function() {
+				    var elem = {
+				        main: $(this).find(">span:first").text(),
+				        child: [],
+				        child2: [],
+				        child3: [],
+				    };
+				    $(this).find(">ol>li>span").each(function() {
+				        elem.child.push($(this).text());
+				    });
+				  
+
+				    $(this).find(">ol>li>ol>li>span").each(function() {
+				        elem.child2.push($(this).text());
+				    });
+
+				    $(this).find(">ol>li>ol>li>ol>li>span").each(function() {
+				        elem.child3.push($(this).text());
+				    });
+				    arr.push(elem);
+				});
+
+				for(var i=0; i<arr.length; i++)
+				{
+					alert(arr[i].main);
+						for(var j=0; j<arr[i].child.length; j++){
+
+								alert(arr[i].child[j]);
+							
+						}
+
+						for(var k=0; k<arr[i].child2.length; k++)
+						{
+							if(arr[i].child2[0]!=null)
+							{
+									alert(arr[i].child2[k]);
+							}
+						}								
+				}		
+			});
+		});
+	}else{
+	    alert("Sorry, your browser do not support local storage.");
+	}
+	$('.sortable').nestedSortable({			
+			items: 'li'
+		});
+</script>
+</body>
+</html>
